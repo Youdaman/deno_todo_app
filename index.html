@@ -7,6 +7,12 @@
     <title>Deno Todo App</title>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <style>
+    th,td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    </style>
 </head>
 <body>
     <main class="container">
@@ -65,12 +71,12 @@
                     <template x-for="todo in todos" :key="todo._id">
                         <tr>
                             <!-- Row being edited -->
-                            <td colspan="2" x-show="todo.isEditing">
-                                <input type="text" x-model="todo.text" />
-                            </td>
-                            <td x-show="todo.isEditing">
-                                <button @click="saveTodo(todo)">Save</button>
-                                <button @click="todo.isEditing = false">Cancel</button>
+                            <td colspan="3" x-show="todo.isEditing">
+                                <div role="group">
+                                    <input type="text" x-model="todo.text" placeholder="Edit todo">
+                                    <button @click="saveTodo(todo)">Save</button>
+                                    <button @click="todo.isEditing = false" class="secondary">Cancel</button>
+                                </div>
                             </td>
 
                             <!-- Row not being edited -->
