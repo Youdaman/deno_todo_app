@@ -6,7 +6,7 @@ const app = new Hono();
 
 // MongoDB Connection
 const client = new MongoClient();
-await client.connect("mongodb://localhost:27017"); // Change this to your MongoDB URI
+await client.connect("mongodb://mongo:27017"); // use Docker container name as hostname
 const db = client.database('todoApp');
 const todosCollection = db.collection('todos');
 
@@ -77,5 +77,4 @@ app.delete('/todos/:id', async (c) => {
   }
 });
 
-// Use the standard Deno HTTP server to serve Hono app
-serve(app.fetch, { port: 3000 });
+serve(app.fetch, { hostname: "0.0.0.0", port: 3000 }); // hostname required for Docker
