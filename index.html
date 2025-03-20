@@ -53,31 +53,45 @@
                 <input type="button" @click="addTodo()" value="Add Todo">
             </fieldset>
 
-            <ul>
-                <template x-for="todo in todos" :key="todo._id">
-                    <li>
-                        <template x-if="todo.isEditing">
-                            <div>
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>Todo</th>
+                        <th>Completed</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="todo in todos" :key="todo._id">
+                        <tr>
+                            <!-- Row being edited -->
+                            <td colspan="2" x-show="todo.isEditing">
                                 <input type="text" x-model="todo.text" />
+                            </td>
+                            <td x-show="todo.isEditing">
                                 <button @click="saveTodo(todo)">Save</button>
                                 <button @click="todo.isEditing = false">Cancel</button>
-                            </div>
-                        </template>
-                        <template x-if="!todo.isEditing">
-                            <div>
-                                <!-- Make the text clickable to toggle editing mode -->
-                                <span
-                                    :style="{ textDecoration: todo.completed ? 'line-through' : 'none' }"
-                                    x-text="todo.text"
-                                    @click="todo.isEditing = true">
-                                </span>
+                            </td>
+
+                            <!-- Row not being edited -->
+                            <td x-show="!todo.isEditing">
+                                <template x-if="todo.completed">
+                                    <s x-text="todo.text"></s>
+                                </template>
+                                <template x-if="!todo.completed">
+                                    <span x-text="todo.text" @click="todo.isEditing = true"></span>
+                                </template>
+                            </td>
+                            <td x-show="!todo.isEditing">
                                 <input type="checkbox" :checked="todo.completed" @change="toggleTodo(todo._id)">
+                            </td>
+                            <td x-show="!todo.isEditing">
                                 <button @click="deleteTodo(todo._id)">Delete</button>
-                            </div>
-                        </template>
-                    </li>
-                </template>
-            </ul>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
         </div>
     </main>
 </body>
