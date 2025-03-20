@@ -6,75 +6,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deno Todo App</title>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.js" defer></script>
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
 </head>
 <body>
-    <h1>Todo List</h1>
-    <div x-data="{
-            todos: [],
-            newTodo: '',
-            async fetchTodos() {
-                const res = await fetch('/todos');
-                this.todos = (await res.json()).map(todo => ({ ...todo, isEditing: false }));
-            },
-            async addTodo() {
-                if (this.newTodo.trim() === '') return;
-                await fetch('/todos', {
-                    method: 'POST',
-                    body: JSON.stringify({ text: this.newTodo }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                this.newTodo = '';
-                this.fetchTodos();
-            },
-            async deleteTodo(id) {
-                await fetch(`/todos/${id}`, { method: 'DELETE' });
-                this.fetchTodos();
-            },
-            async toggleTodo(id) {
-                await fetch(`/todos/${id}/toggle`, { method: 'PUT' });
-                this.fetchTodos();
-            },
-            async saveTodo(todo) {
-                await fetch(`/todos/${todo._id}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ text: todo.text }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                todo.isEditing = false;
-                this.fetchTodos();
-            }
-        }"
-        x-init="fetchTodos()">
+    <main class="container">
+        <h1>Todo List</h1>
+        <div x-data="{
+                todos: [],
+                newTodo: '',
+                async fetchTodos() {
+                    const res = await fetch('/todos');
+                    this.todos = (await res.json()).map(todo => ({ ...todo, isEditing: false }));
+                },
+                async addTodo() {
+                    if (this.newTodo.trim() === '') return;
+                    await fetch('/todos', {
+                        method: 'POST',
+                        body: JSON.stringify({ text: this.newTodo }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    this.newTodo = '';
+                    this.fetchTodos();
+                },
+                async deleteTodo(id) {
+                    await fetch(`/todos/${id}`, { method: 'DELETE' });
+                    this.fetchTodos();
+                },
+                async toggleTodo(id) {
+                    await fetch(`/todos/${id}/toggle`, { method: 'PUT' });
+                    this.fetchTodos();
+                },
+                async saveTodo(todo) {
+                    await fetch(`/todos/${todo._id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ text: todo.text }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    todo.isEditing = false;
+                    this.fetchTodos();
+                }
+            }"
+            x-init="fetchTodos()">
 
-        <input x-model="newTodo" type="text" placeholder="Add a new todo">
-        <button @click="addTodo()">Add Todo</button>
+            <fieldset role="group">
+                <input x-model="newTodo" type="text" placeholder="Add a new todo">
+                <input type="button" @click="addTodo()" value="Add Todo">
+            </fieldset>
 
-        <ul>
-            <template x-for="todo in todos" :key="todo._id">
-                <li>
-                    <template x-if="todo.isEditing">
-                        <div>
-                            <input type="text" x-model="todo.text" />
-                            <button @click="saveTodo(todo)">Save</button>
-                            <button @click="todo.isEditing = false">Cancel</button>
-                        </div>
-                    </template>
-                    <template x-if="!todo.isEditing">
-                        <div>
-                            <!-- Make the text clickable to toggle editing mode -->
-                            <span
-                                :style="{ textDecoration: todo.completed ? 'line-through' : 'none' }"
-                                x-text="todo.text"
-                                @click="todo.isEditing = true">
-                            </span>
-                            <input type="checkbox" :checked="todo.completed" @change="toggleTodo(todo._id)">
-                            <button @click="deleteTodo(todo._id)">Delete</button>
-                        </div>
-                    </template>
-                </li>
-            </template>
-        </ul>
-    </div>
+            <ul>
+                <template x-for="todo in todos" :key="todo._id">
+                    <li>
+                        <template x-if="todo.isEditing">
+                            <div>
+                                <input type="text" x-model="todo.text" />
+                                <button @click="saveTodo(todo)">Save</button>
+                                <button @click="todo.isEditing = false">Cancel</button>
+                            </div>
+                        </template>
+                        <template x-if="!todo.isEditing">
+                            <div>
+                                <!-- Make the text clickable to toggle editing mode -->
+                                <span
+                                    :style="{ textDecoration: todo.completed ? 'line-through' : 'none' }"
+                                    x-text="todo.text"
+                                    @click="todo.isEditing = true">
+                                </span>
+                                <input type="checkbox" :checked="todo.completed" @change="toggleTodo(todo._id)">
+                                <button @click="deleteTodo(todo._id)">Delete</button>
+                            </div>
+                        </template>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </main>
 </body>
 </html>
