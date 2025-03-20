@@ -39,8 +39,22 @@ app.post('/todos', async (c) => {
 app.put('/todos/:id', async (c) => {
   const { id } = c.req.param();
   const body = await c.req.json();
-  await todosCollection.updateOne({ _id: { $oid: id } }, { $set: body });
-  return c.json({ message: 'Todo updated' });
+
+  try {
+    const objectId = new Bson.ObjectId(id); // Convert string id to ObjectId
+    const updatedCount = await todosCollection.updateOne(
+      { _id: objectId },
+      { $set: body }
+    );
+
+    if (updatedCount === 0) {
+      return c.json({ message: 'Todo not found' }, 404);
+    }
+
+    return c.json({ message: 'Todo updated' });
+  } catch (error) {
+    return c.json({ message: 'Invalid ID format' }, 400);
+  }
 });
 
 // Update a todo's completed status
